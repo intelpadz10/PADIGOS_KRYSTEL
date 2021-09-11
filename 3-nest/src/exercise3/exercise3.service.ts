@@ -6,7 +6,7 @@ export class Exercise3Service {
         return "I love programming";
     }
     
-    loopsTriangle(height: number){
+    loopTriangle(height: number){
         var string = '';
         
         for (var i = 0; i < height; i++) {
@@ -16,31 +16,21 @@ export class Exercise3Service {
             string += '\n';
         }
         console.log(string);
-        return string;
+        return (string);
     }
 
     hello(name: string){
-        return (`Hi there!, + ${name}`);
+        return (`Hi there, ${name}!`);
     }
 
     primeNumber(n: number){
-        var a = 5;
-        var b = 6;
         
-        if (a == 1 || a == 2) {
-            console.log(`${a} is a prime number? True`);
-        } else if (a % 2 == 0) {
-            console.log(`${a} is a prime number? False`);
+        if (n == 1 || n == 2) {
+            return (`The number ${n} is a prime number`);
+        } else if (n % 2 == 0) {
+            return (`The number ${n} is not a prime number`);
         } else {
-            console.log(`${a} is a prime number? True`);
-        }
-        
-        if (b == 1 || b == 2) {
-            console.log(`${b} is a prime number? True`);
-        } else if (b % 2 == 0) {
-            console.log(`${b} is a prime number? False`);
-        } else {
-            console.log(`${b} is a prime number? True`);
+            return (`The number ${n} is a prime number`);
         }
     }
 }

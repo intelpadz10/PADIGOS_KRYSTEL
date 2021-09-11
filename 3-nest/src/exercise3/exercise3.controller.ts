@@ -11,13 +11,19 @@ export class Exercise3Controller {
       return this.exercise3.getHello();
     }
     
-    @Get("/loopstriangle/:height")
+    @Get("/looptriangle/:height")
     loopsTriangle(@Param('height') height: number){
-        return this.exercise3.loopsTriangle(height); 
+        return this.exercise3.loopTriangle(height); 
     }
 
     @Get("/hello/:name")
     hello(@Param('name') name: string){
       return this.exercise3.hello(name); 
     }
+
+    @Get("/primeNumber/:n")
+    primeNumber(@Param('n') n:number){
+        return this.exercise3.primeNumber(n);
+    }
 }
+
