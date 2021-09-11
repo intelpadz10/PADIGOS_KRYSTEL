@@ -15,4 +15,9 @@ export class Exercise3Controller {
     loopsTriangle(@Param('height') height: number){
         return this.exercise3.loopsTriangle(height); 
     }
+
+    @Get("/hello/:name")
+    hello(@Param('name') name: string){
+      return this.exercise3.hello(name); 
+    }
 }
