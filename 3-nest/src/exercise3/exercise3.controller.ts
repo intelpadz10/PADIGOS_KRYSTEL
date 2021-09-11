@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 
 import { Exercise3Service } from './exercise3.service';
 
@@ -11,9 +11,8 @@ export class Exercise3Controller {
       return this.exercise3.getHello();
     }
     
-    @Get()
-    loopsTriangle(){
-        var height;
-        return this.exercise3.loopsTriangle(); 
+    @Get("/loopstriangle/:height")
+    loopsTriangle(@Param('height') height: number){
+        return this.exercise3.loopsTriangle(height); 
     }
 }

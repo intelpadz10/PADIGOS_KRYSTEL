@@ -1,6 +1,10 @@
 var height = 10;
 var string = '';
 
-for (var i = '*'; i.length <= height; i = i + '*') {
-    console.log(i);
+for (var i = 0; i < height; i++) {
+    for (var x = 0; x < i; x++) {
+        string += '*';
+    }
+    string += '\n';
 }
+console.log(string);
