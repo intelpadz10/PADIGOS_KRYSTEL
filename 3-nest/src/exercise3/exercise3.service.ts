@@ -1,7 +1,12 @@
+import { Car } from './car.model';
+//import { HTML } from './html.helper';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class Exercise3Service {
+
+    private cars: Map<string, Car> = new Map<string, Car>();
+
     getHello(){
         return "I love programming";
     }
@@ -33,4 +38,19 @@ export class Exercise3Service {
             return (`The number ${n} is a prime number`);
         }
     }
+
+    addJoshCar(){
+        var joshuaCar: Car;
+        joshuaCar = new Car("Montero" , "Red", {name: "Goodyear", radius:18});
+        this.cars.set("joshua", joshuaCar); 
+        this.logAllcars();   
+        }
+
+logAllcars(){
+    for(const [key,car] of this.cars.entries()){
+        console.log(key);
+        car.log();
+    }
+}
+
 }

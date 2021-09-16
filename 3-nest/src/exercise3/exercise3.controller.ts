@@ -1,5 +1,4 @@
 import { Controller, Get, Param } from '@nestjs/common';
-
 import { Exercise3Service } from './exercise3.service';
 
 @Controller('exercise3')
@@ -24,6 +23,11 @@ export class Exercise3Controller {
     @Get("/primeNumber/:n")
     primeNumber(@Param('n') n:number){
         return this.exercise3.primeNumber(n);
+    }
+
+    @Get('/addJoshCar')
+    test(){
+      return this.exercise3.addJoshCar();
     }
 }
 
