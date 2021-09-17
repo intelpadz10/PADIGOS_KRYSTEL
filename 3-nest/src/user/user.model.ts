@@ -13,8 +13,15 @@ export class User{
       this,password=password;
     }
     
+    log(){
+      console.log('${this.name} | age: ${this.age} | email: ${this.email}');
+    }
+    
     login(email:string, password:string){
-      //return true or false
+        if(this.email == email && this.password == password){
+            return true;
+        }else 
+            false;
     }
     
     toJson(){
