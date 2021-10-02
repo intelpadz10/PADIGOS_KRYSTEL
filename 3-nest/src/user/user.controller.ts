@@ -19,26 +19,24 @@ export class UserController {
     }
 
     @Get("/:id")
-    getInfo(@Param('id')id:number){
+    getInfo(@Param('id')id:string){
         return this.userService.getInfo(id);
     }
 
     @Put("/:id")
-    replaceAll(@Body()body:any, @Param('id')id:string){
-        const Parse = parseInt (id);
-        return this.userService.replaceAll(body,Parse);
+    replaceAllPut(@Body()body:any, @Param('id')id:string){
+        return this.userService.replaceAllPut(body,id);
     }
 
     @Patch("/:id")
-    replaceValues(@Body()body:any, @Param('id')id:string){
-        const Parse = parseInt (id);
-        return this.userService.replaceValues(body,Parse);
+    replaceValuesPatch(@Body()body:any, @Param('id')id:string){
+        return this.userService.replaceValuesPatch(body,id);
     }
 
     @Delete("/:id")
     deleteUser(@Param('id')id:string){
         const Parse = parseInt (id);
-        return this.userService.deleteUser(Parse);
+        return this.userService.deleteUser(id);
     }
 
     @Post("/login")
