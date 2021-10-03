@@ -32,11 +32,11 @@ export class User {
     var keys: Array <string> = Helper.describeClass(User);
     keys = Helper.removeItemOnce(keys,'password');
     for(const key of keys){
-      if(`${this[key]} === term`)
+      if(`${this[key]}` === term)
       return true;
     }
     return false;
-}
+  }
 
   replaceValues(body: any): boolean {
     this.name = body.name;
@@ -57,16 +57,16 @@ export class User {
     name: this.name,
     age: this.age,
     email: this.email,
-    password: this.password
     }
   }
 
-  anaderJson() {
-    return {     
-    id: this.id,
-    name: this.name,
-    age: this.age,
-    email: this.email,
+  anadertoJson(){
+    return{
+      password: this.password
     }
   }
-}
+    
+  newID(prevID: string){
+    this.id = prevID;
+  }
+  }

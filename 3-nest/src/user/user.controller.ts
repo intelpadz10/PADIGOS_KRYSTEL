@@ -41,10 +41,10 @@ export class UserController {
 
     @Post("/login")
     login(@Body()body:string){
-        return this.userService.login(body);
+        return this.userService.loginUser(body);
     }
 
-    @Get("search/:term")
+    @Get('/search/:term')
     searchUser(@Param('term')term:string){
         return this.userService.searchUser(term);
     }
