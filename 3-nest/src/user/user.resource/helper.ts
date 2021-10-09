@@ -13,7 +13,7 @@ export class Helper {
   static generateUID(): string {
     return uid().toString().replace(/-/g, '').substring(0, 27);
   }
-  
+
   //removes an item matching the value from the array
   static removeItemOnce(arr: Array<any>, value: any): Array<any> {
     var index = arr.indexOf(value);
@@ -22,7 +22,7 @@ export class Helper {
     }
     return arr;
   }
-  
+
   static populate(): Map<string, User> {
     var result: Map<string, User> = new Map<string, User>();
     try {
@@ -57,7 +57,7 @@ export class Helper {
         if (typeof body[key] != types.get(key)) {
           throw new Error(
             `${key} with value ${body[key]} with type ${typeof body[
-              key
+            key
             ]} is not a valid entry, expecting ${key}:${types.get(key)}`,
           );
         }

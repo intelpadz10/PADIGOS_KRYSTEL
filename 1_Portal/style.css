@@ -24,13 +24,13 @@ body {
 h1 {
     margin-left: 250px;
     font-size: 400%;
-    font-family: 'Acme', sans-serif;
+    font-family: "Acme", sans-serif;
 }
 
 h5 {
     margin-left: 390px;
     font-size: 150%;
-    font-family: 'Acme', sans-serif;
+    font-family: "Acme", sans-serif;
 }
 
 .mainContent {
@@ -92,5 +92,5 @@ p {
     justify-content: center;
     text-align: center;
     font-size: 200%;
-    font-family: 'Playfair Display', serif;
+    font-family: "Playfair Display", serif;
 }

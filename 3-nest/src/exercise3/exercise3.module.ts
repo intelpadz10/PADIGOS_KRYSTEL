@@ -6,4 +6,4 @@ import { Module } from '@nestjs/common';
   controllers: [Exercise3Controller],
   providers: [Exercise3Service]
 })
-export class Exercise3Module {}
+export class Exercise3Module { }
