@@ -31,7 +31,7 @@ export class User {
   static async retrieve(id: string): Promise<User> {
     try {
       var DB = admin.firestore();
-      var result = await DB.collection('users').doc(id).get();
+      var result = await DB.collection("users").doc(id).get();
       if (result.exists) {
         var data = result.data();
         return new User(
@@ -52,12 +52,12 @@ export class User {
   async commit(): Promise<CRUDReturn> {
     try {
       var DB = admin.firestore();
-      var result = await DB.collection('users')
+      var result = await DB.collection("users")
         .doc(this.id)
-        .set(this.noIDtoJson());
+        .set(this.toJson());
       return {
         success: true,
-        data: this.noIDtoJson(),
+        data: this.toJson(),
       };
     } catch (error) {
       console.log(error);
@@ -108,16 +108,17 @@ export class User {
       name: this.name,
       age: this.age,
       email: this.email,
+      password: this.password,
     };
   }
 
-  anadertoJson() {
+  toJsonPass() {
     return {
       password: this.password,
     };
   }
 
-  noIDtoJson() {
+  toJsonNoID() {
     return {
       name: this.name,
       age: this.age,

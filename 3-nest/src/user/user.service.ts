@@ -6,6 +6,7 @@ import { CRUDReturn } from './user.resource/crud_return.interface';
 import { Helper } from './user.resource/helper';
 import { Injectable } from '@nestjs/common';
 import { User } from './user.resource/user.model';
+import { doc } from 'prettier';
 import { resourceLimits } from 'worker_threads';
 
 const DEBUG: boolean = true;
@@ -32,15 +33,16 @@ export class UserService {
             var allUsers = await this.getAllUserObejcts();
             allUsers.forEach((user) => {
                 results.push(user.toJson());
+                console.log(user.toJson());
             });
             return {
                 success: true,
                 data: results,
             };
-        } catch (e) {
+        } catch (error) {
             return {
                 success: false,
-                data: e,
+                data: error,
             };
         }
     }
@@ -49,7 +51,7 @@ export class UserService {
         var results: Array<User> = [];
         try {
             var dbData: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
-                await this.DB.collection('users').get();
+                await this.DB.collection("users").get();
             dbData.forEach((doc) => {
                 if (doc.exists) {
                     var data = doc.data();
@@ -59,7 +61,7 @@ export class UserService {
                             data['age'],
                             data['email'],
                             data['password'],
-                            data['id'],
+                            doc.id,
                         ),
                     );
                 }
@@ -94,16 +96,18 @@ export class UserService {
             var validBodyPut: { valid: boolean; data: string } =
                 Helper.validBodyPut(user);
             if (validBodyPut.valid) {
-                var exists = this.emailExists(user.email);
-                if (!this.emailExists(user.email)) {
-                    var newUser: User = new User(
-                        user.name,
-                        user.age,
-                        user.email,
-                        user.password,
+                var exists = await this.emailExists(user.email);
+                if (!exists) {
+                    var newUser: User;
+                    newUser = new User(
+                        user?.name,
+                        user?.age,
+                        user?.email,
+                        user?.password,
                     );
                     if (await this.savetoDB(newUser)) {
-                        if (debug) this.logAllUser();
+                        if (debug) this.getAll();
+                        console.log(newUser.toJson());
                         return {
                             success: true,
                             data: newUser.toJson(),
@@ -124,10 +128,10 @@ export class UserService {
 
     async getInfo(id: string): Promise<CRUDReturn> {
         try {
-            var result = await this.DB.collection('users').doc(id).get();
+            var result = await this.DB.collection("users").doc(id).get();
             if (result.exists) {
                 return {
-                    success: false,
+                    success: true,
                     data: result.data(),
                 };
             } else {
@@ -159,17 +163,30 @@ export class UserService {
         //}
     }
 
-    searchUser(term: string): CRUDReturn {
-        var storeData = [];
-        for (const bodyTerm of this.users.values()) {
-            if (bodyTerm.matches(term)) {
-                console.log('yawa');
-                storeData.push(bodyTerm.toJson());
+    async searchUser(term: string): Promise<CRUDReturn> {
+        try {
+            var storeData: Array<any> = [];
+            var dbData: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
+                await this.DB.collection("users").get();
+            dbData.forEach((doc) => {
+                if (term == doc.data()["id"] || term == doc.data()["name"] ||
+                    term == doc.data()["age"] || term == doc.data()["email"]) {
+
+                    storeData.push(doc.data())
+                }
+            });
+            if (storeData.length > 0) {
+                return {
+                    success: true,
+                    data: storeData,
+                };
+            } else {
+                return {
+                    success: false,
+                    data: `${term} does not match any users in database!`,
+                };
             }
-        }
-        if (storeData.length > 0) {
-            return { success: true, data: storeData };
-        } else {
+        } catch (error) {
             return {
                 success: false,
                 data: `${term} does not match any users in database!`,
@@ -177,272 +194,397 @@ export class UserService {
         }
     }
 
-    replaceAllPut(user: any, id: string): CRUDReturn {
+    async replaceAllPut(user: any, id: string): Promise<CRUDReturn> {
         try {
             var validBodyPut: { valid: boolean; data: string } =
                 Helper.validBodyPut(user);
+            var dbData = await this.DB.collection("users").doc(id).get();
 
             if (validBodyPut.valid) {
-                for (const newUser of this.users.values()) {
-                    if (this.idExists(id)) {
-                        var exists = this.emailExists(user.email);
-                        if (!this.emailExists(user.email)) {
-                            if (newUser.replaceValues(user)) {
-                                return {
-                                    success: true,
-                                    data: newUser.toJson(),
-                                };
-                            }
+                if (this.idExists(id)) {
+                    var exists = await this.emailExists(user.email);
+                    if (!exists || user.email == dbData.data()["email"]) {
+                        await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, email: user.email, password: user.password });
+                        if (dbData.exists) {
                             return {
-                                success: false,
-                                data: `${user.emai} exists in current user.`,
+                                success: true,
+                                data: dbData.data(),
                             };
                         }
-                    } else
+                    }
+                    else {
                         return {
                             success: false,
-                            data: 'Does not replace the generated ID',
+                            data: `${user.email} is already in use by another user!`
                         };
-                }
-                throw new Error(`${user.email} is already in use by another user!`);
+                    } 
+                } throw new Error(`user does not exist in database.`);
+            }else {
+                throw new Error(validBodyPut.data);
             }
-            throw new Error(validBodyPut.data);
         } catch (error) {
             return { success: false, data: `${error.message}` };
         }
     }
 
-    replaceValuesPatch(user: any, id: string) {
+
+    // async replaceValuesPatch(user: any, id: string): Promise<CRUDReturn> {
+    //     var validBody: { valid: boolean; data: string } = Helper.validBody(user);
+    //     var count: number = this.countFunction(user, count);
+    //     var firstUser: User = this.users.get(id);
+    //     var secondUser: User;
+
+    //     try {
+    //         if (validBody.valid) {
+    //             for (const newUser of this.users.values()) {
+    //                 console.log('Success');
+    //                 if (id == newUser.toJson().id) {
+    //                     if (!this.emailExists(user?.email)) {
+    //                         switch (count) {
+    //                             case 1:
+    //                                 if (user.name != undefined) {
+    //                                     secondUser = new User(
+    //                                         user.name,
+    //                                         firstUser.toJson().age,
+    //                                         firstUser.toJson().email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.age != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         user.age,
+    //                                         firstUser.toJson().email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.email != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         firstUser.toJson().age,
+    //                                         user.email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.password != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         firstUser.toJson().age,
+    //                                         user.email,
+    //                                         user.password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 return {
+    //                                     success: true,
+    //                                     data: firstUser.toJson(),
+    //                                 };
+    //                                 break;
+
+    //                             case 2:
+    //                                 if (user.name != undefined && user.age != undefined) {
+    //                                     secondUser = new User(
+    //                                         user.name,
+    //                                         user.age,
+    //                                         firstUser.toJson().email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.name != undefined && user.email != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         firstUser.toJson().age,
+    //                                         user.email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.name != undefined && user.password != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         firstUser.toJson().age,
+    //                                         firstUser.toJson().email,
+    //                                         user.password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.age != undefined && user.email != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         user.age,
+    //                                         user.email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.age != undefined && user.password != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         user.age,
+    //                                         firstUser.toJson().email,
+    //                                         user.password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (user.email != undefined && user.password != undefined) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         user.age,
+    //                                         user.email,
+    //                                         user.password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 return {
+    //                                     success: true,
+    //                                     data: firstUser.toJson(),
+    //                                 };
+    //                                 break;
+
+    //                             case 3:
+    //                                 if (
+    //                                     user.name != undefined &&
+    //                                     user.age != undefined &&
+    //                                     user.email != undefined
+    //                                 ) {
+    //                                     secondUser = new User(
+    //                                         user.name,
+    //                                         user.age,
+    //                                         user.email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (
+    //                                     user.name != undefined &&
+    //                                     user.age != undefined &&
+    //                                     user.password != undefined
+    //                                 ) {
+    //                                     secondUser = new User(
+    //                                         user.name,
+    //                                         user.age,
+    //                                         firstUser.toJson().email,
+    //                                         user.password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (
+    //                                     user.name != undefined &&
+    //                                     user.email != undefined &&
+    //                                     user.password != undefined
+    //                                 ) {
+    //                                     secondUser = new User(
+    //                                         user.name,
+    //                                         firstUser.toJson().age,
+    //                                         user.email,
+    //                                         user.password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 if (
+    //                                     user.age != undefined &&
+    //                                     user.email != undefined &&
+    //                                     user.password != undefined
+    //                                 ) {
+    //                                     secondUser = new User(
+    //                                         firstUser.toJson().name,
+    //                                         user.age,
+    //                                         user.email,
+    //                                         firstUser.toJsonPass().password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 return {
+    //                                     success: true,
+    //                                     data: firstUser.toJson(),
+    //                                 };
+    //                                 break;
+    //                             case 4:
+    //                                 if (
+    //                                     user.name != undefined &&
+    //                                     user.age != undefined &&
+    //                                     user.email != undefined &&
+    //                                     user.password != undefined
+    //                                 ) {
+    //                                     secondUser = new User(
+    //                                         user.name,
+    //                                         user.age,
+    //                                         user.email,
+    //                                         user.password,
+    //                                     );
+    //                                     this.users.set(id, secondUser);
+    //                                     this.users.get(id).newID(id);
+    //                                     firstUser = secondUser;
+    //                                 }
+    //                                 return {
+    //                                     success: true,
+    //                                     data: firstUser.toJson(),
+    //                                 };
+    //                                 break;
+    //                         }
+    //                     } else
+    //                         throw new Error(
+    //                             `${user.email} exists in database that is not of the current user.`,
+    //                         );
+    //                 }
+    //             }
+    //             throw new Error('User not found!');
+    //         } else {
+    //             throw new Error(validBody.data);
+    //         }
+    //     } catch (error) {
+    //         return { success: false, data: `${error.message}` };
+    //     }
+    // }
+
+    async replaceValuesPatch(user: any, id: string): Promise<CRUDReturn> {
         var validBody: { valid: boolean; data: string } = Helper.validBody(user);
         var count: number = this.countFunction(user, count);
-        var firstUser: User = this.users.get(id);
-        var secondUser: User;
+        var dbData = await this.DB.collection("users").doc(id).get();
 
         try {
             if (validBody.valid) {
-                for (const newUser of this.users.values()) {
-                    console.log('Success');
-                    if (id == newUser.toJson().id) {
-                        if (!this.emailExists(user?.email)) {
-                            switch (count) {
-                                case 1:
-                                    if (user.name != undefined) {
-                                        secondUser = new User(
-                                            user.name,
-                                            firstUser.toJson().age,
-                                            firstUser.toJson().email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.age != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            user.age,
-                                            firstUser.toJson().email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.email != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            firstUser.toJson().age,
-                                            user.email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.password != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            firstUser.toJson().age,
-                                            user.email,
-                                            user.password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    return {
-                                        success: true,
-                                        data: firstUser.toJson(),
-                                    };
-                                    break;
+                if (this.idExists(id)) {
+                    var exists = await this.emailExists(user?.email);
+                    if (!exists || user.email == dbData.data()["email"]) {
+                        switch (count) {
+                            case 1:
+                                if (user.name != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name });
+                                }
+                                if (user.age != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ age: user.age });
+                                }
+                                if (user.email != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ email: user.email });
+                                }
+                                if (user.password != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ password: user.password });
+                                }
+                                var anotherdata = (await this.DB.collection("users").doc(id).get()).data();
+                                console.log(anotherdata);
+                                return {
+                                    success: true,
+                                    data: anotherdata,
+                                };
+                                break;
 
-                                case 2:
-                                    if (user.name != undefined && user.age != undefined) {
-                                        secondUser = new User(
-                                            user.name,
-                                            user.age,
-                                            firstUser.toJson().email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.name != undefined && user.email != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            firstUser.toJson().age,
-                                            user.email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.name != undefined && user.password != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            firstUser.toJson().age,
-                                            firstUser.toJson().email,
-                                            user.password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.age != undefined && user.email != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            user.age,
-                                            user.email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.age != undefined && user.password != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            user.age,
-                                            firstUser.toJson().email,
-                                            user.password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (user.email != undefined && user.password != undefined) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            user.age,
-                                            user.email,
-                                            user.password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    return {
-                                        success: true,
-                                        data: firstUser.toJson(),
-                                    };
-                                    break;
+                            case 2:
+                                if (user.name != undefined && user.age != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age });
+                                }
+                                if (user.name != undefined && user.email != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name, email: user.email });
+                                }
+                                if (user.name != undefined && user.password != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name, password: user.password });
+                                }
+                                if (user.age != undefined && user.email != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ age: user.age, email: user.email });
+                                }
+                                if (user.age != undefined && user.password != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ age: user.age, password: user.password });
+                                }
+                                if (user.email != undefined && user.password != undefined) {
+                                    await this.DB.collection("users").doc(id).update({ email: user.email, password: user.password });
+                                }
+                                var anotherdata = (await this.DB.collection('users').doc(id).get()).data();
+                                console.log(anotherdata);
+                                return {
+                                    success: true,
+                                    data: anotherdata,
+                                };
+                                break;
 
-                                case 3:
-                                    if (
-                                        user.name != undefined &&
-                                        user.age != undefined &&
-                                        user.email != undefined
-                                    ) {
-                                        secondUser = new User(
-                                            user.name,
-                                            user.age,
-                                            user.email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (
-                                        user.name != undefined &&
-                                        user.age != undefined &&
-                                        user.password != undefined
-                                    ) {
-                                        secondUser = new User(
-                                            user.name,
-                                            user.age,
-                                            firstUser.toJson().email,
-                                            user.password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (
-                                        user.name != undefined &&
-                                        user.email != undefined &&
-                                        user.password != undefined
-                                    ) {
-                                        secondUser = new User(
-                                            user.name,
-                                            firstUser.toJson().age,
-                                            user.email,
-                                            user.password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    if (
-                                        user.age != undefined &&
-                                        user.email != undefined &&
-                                        user.password != undefined
-                                    ) {
-                                        secondUser = new User(
-                                            firstUser.toJson().name,
-                                            user.age,
-                                            user.email,
-                                            firstUser.anadertoJson().password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    return {
-                                        success: true,
-                                        data: firstUser.toJson(),
-                                    };
-                                    break;
-                                case 4:
-                                    if (
-                                        user.name != undefined &&
-                                        user.age != undefined &&
-                                        user.email != undefined &&
-                                        user.password != undefined
-                                    ) {
-                                        secondUser = new User(
-                                            user.name,
-                                            user.age,
-                                            user.email,
-                                            user.password,
-                                        );
-                                        this.users.set(id, secondUser);
-                                        this.users.get(id).newID(id);
-                                        firstUser = secondUser;
-                                    }
-                                    return {
-                                        success: true,
-                                        data: firstUser.toJson(),
-                                    };
-                                    break;
-                            }
-                        } else
-                            throw new Error(
-                                `${user.email} exists in database that is not of the current user.`,
-                            );
-                    }
+                            case 3:
+                                if (
+                                    user.name != undefined &&
+                                    user.age != undefined &&
+                                    user.email != undefined
+                                ) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, email: user.email });
+                                }
+                                if (
+                                    user.name != undefined &&
+                                    user.age != undefined &&
+                                    user.password != undefined
+                                ) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, password: user.password });
+                                }
+                                if (
+                                    user.name != undefined &&
+                                    user.email != undefined &&
+                                    user.password != undefined
+                                ) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name, email: user.email, password: user.password });
+                                }
+                                if (
+                                    user.age != undefined &&
+                                    user.email != undefined &&
+                                    user.password != undefined
+                                ) {
+                                    await this.DB.collection("users").doc(id).update({ age: user.age, email: user.email, password: user.password });
+                                }
+                                var anotherdata = (await this.DB.collection("users").doc(id).get()).data();
+                                console.log(anotherdata);
+                                return {
+                                    success: true,
+                                    data: anotherdata,
+                                };
+                                break;
+                            case 4:
+                                if (
+                                    user.name != undefined &&
+                                    user.age != undefined &&
+                                    user.email != undefined &&
+                                    user.password != undefined
+                                ) {
+                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, email: user.email, password: user.password });
+                                }
+                                var anotherdata = (await this.DB.collection("users").doc(id).get()).data();
+                                console.log(anotherdata);
+                                return {
+                                    success: true,
+                                    data: anotherdata,
+                                };
+                                break;
+                        }
+                    } else
+                        throw new Error(
+                            `${user.email} does not exist in database.`,
+                        );
                 }
                 throw new Error('User not found!');
             } else {
@@ -453,22 +595,23 @@ export class UserService {
         }
     }
 
-    deleteUser(id: string): CRUDReturn {
+
+    async deleteUser(id: string): Promise<CRUDReturn> {
         if (this.users.has(id)) {
-            this.users.delete(id);
+            var result = await this.DB.collection("users").doc(id).delete();
+            console.log(result);
             return {
                 success: true,
-                data: 'User data is successfully deleted.',
+                data: "data has been deleted",
             };
-        } else {
+        } else
             return {
                 success: false,
-                data: 'User data does not exist in database.',
+                data: "not deleted",
             };
-        }
     }
 
-    loginUser(login: any): CRUDReturn {
+    async loginUser(login: any): Promise<CRUDReturn> {
         try {
             for (const user of this.users.values()) {
                 if (user.toJson().email == login.email)
@@ -482,13 +625,13 @@ export class UserService {
     }
 
     async emailExists(email: string): Promise<boolean> {
-        var userResults = await this.DB.collection('users')
-            .where('email', '==', email)
+        var userResults = await this.DB.collection("users")
+            .where("email", "==", email || "")
             .get();
+        console.log(userResults.size);
         if (userResults.size > 0) {
             for (const doc of userResults.docs) {
-                if (doc.data()['email'] === email) return false;
-                else {
+                if (doc.data()['email'] === email) {
                     return true;
                 }
             }
@@ -496,6 +639,37 @@ export class UserService {
             return false;
         }
     }
+
+    // async emailExists(email: string, options?: { exceptionId: string }): Promise<boolean> {
+    //     try {
+    //         var userResults = await this.DB.collection("users")
+    //             .where("email", "==", email)
+    //             .get();
+    //         console.log("Are the user results empty?");
+    //         console.log(userResults.empty);
+    //         if (userResults.empty) {
+    //             return false;
+    //         }
+    //         for (const doc of userResults.docs) {
+    //             console.log(doc.data());
+    //             console.log("Are the options defined?");
+    //             console.log(options != undefined);
+    //             if (options != undefined) {
+    //                 if (doc.id == options?.exceptionId) continue;
+    //             }
+    //             if (doc.data()["email"] === email) {
+    //                 return true;
+    //             } else {
+    //                 return false;
+    //             }
+    //         }
+    //         return false;
+    //     } catch (error) {
+    //         console.log("Email exists subfunction error");
+    //         console.log(error.message);
+    //         return false;
+    //     }
+    // }
 
     async savetoDB(user: User): Promise<boolean> {
         try {
@@ -507,12 +681,20 @@ export class UserService {
         }
     }
 
-    idExists(id: string): boolean {
-        for (const user of this.users.values()) {
-            if (id == user.toJson().id) {
-                return true;
+    async idExists(id: string): Promise<boolean> {
+        var dbData: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
+            await this.DB.collection("users").get();
+        var x = 0;
+
+        dbData.forEach((doc) => {
+            if (id === doc.id) {
+                x = 1;
             }
-        }
+        });
+        if (x == 1) {
+            return true;
+        } else
+            return false;
     }
 
     countFunction(body: any, count: number) {
