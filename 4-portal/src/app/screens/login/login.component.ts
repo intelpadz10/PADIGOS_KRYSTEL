@@ -19,12 +19,16 @@ export class LoginComponent implements OnInit {
   fCPassword = new FormControl();
   
   login(){
-    // if(email == "padigos1000@gmail.com" && password == "secret"){
-    //   this.router.navigate(["home"]);
-    // }
-    // else{
-    //   alert ("Incorrect Details");
-    //   console.log("Sayop ka bai");
-    // }
+    if(this.fCEmail.value == "padigos1000@gmail.com" && this.fCPassword.value == "secret"){
+      this.nav('home');
+    }
+    else{
+      alert ("Incorrect Details");
+      console.log("Sayop ka bai");
+    }
+  }
+
+  nav(destination:string){
+    this.router.navigate([destination]);
   }
 }

@@ -5,10 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'portal';
-
-  login(email:string, password:string){
-    
-  }
-}
+export class AppComponent {}
