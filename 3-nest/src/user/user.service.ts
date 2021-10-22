@@ -51,7 +51,7 @@ export class UserService {
         var results: Array<User> = [];
         try {
             var dbData: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
-                await this.DB.collection("users").get();
+                await this.DB.collection('users').get();
             dbData.forEach((doc) => {
                 if (doc.exists) {
                     var data = doc.data();
@@ -128,7 +128,7 @@ export class UserService {
 
     async getInfo(id: string): Promise<CRUDReturn> {
         try {
-            var result = await this.DB.collection("users").doc(id).get();
+            var result = await this.DB.collection('users').doc(id).get();
             if (result.exists) {
                 return {
                     success: true,
@@ -167,12 +167,15 @@ export class UserService {
         try {
             var storeData: Array<any> = [];
             var dbData: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
-                await this.DB.collection("users").get();
+                await this.DB.collection('users').get();
             dbData.forEach((doc) => {
-                if (term == doc.data()["id"] || term == doc.data()["name"] ||
-                    term == doc.data()["age"] || term == doc.data()["email"]) {
-
-                    storeData.push(doc.data())
+                if (
+                    term == doc.data()['id'] ||
+                    term == doc.data()['name'] ||
+                    term == doc.data()['age'] ||
+                    term == doc.data()['email']
+                ) {
+                    storeData.push(doc.data());
                 }
             });
             if (storeData.length > 0) {
@@ -198,35 +201,41 @@ export class UserService {
         try {
             var validBodyPut: { valid: boolean; data: string } =
                 Helper.validBodyPut(user);
-            var dbData = await this.DB.collection("users").doc(id).get();
+            var dbData = await this.DB.collection('users').doc(id).get();
 
             if (validBodyPut.valid) {
                 if (this.idExists(id)) {
                     var exists = await this.emailExists(user.email);
-                    if (!exists || user.email == dbData.data()["email"]) {
-                        await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, email: user.email, password: user.password });
+                    if (!exists || user.email == dbData.data()['email']) {
+                        await this.DB.collection('users')
+                            .doc(id)
+                            .update({
+                                name: user.name,
+                                age: user.age,
+                                email: user.email,
+                                password: user.password,
+                            });
                         if (dbData.exists) {
                             return {
                                 success: true,
                                 data: dbData.data(),
                             };
                         }
-                    }
-                    else {
+                    } else {
                         return {
                             success: false,
-                            data: `${user.email} is already in use by another user!`
+                            data: `${user.email} is already in use by another user!`,
                         };
-                    } 
-                } throw new Error(`user does not exist in database.`);
-            }else {
+                    }
+                }
+                throw new Error(`user does not exist in database.`);
+            } else {
                 throw new Error(validBodyPut.data);
             }
         } catch (error) {
             return { success: false, data: `${error.message}` };
         }
     }
-
 
     // async replaceValuesPatch(user: any, id: string): Promise<CRUDReturn> {
     //     var validBody: { valid: boolean; data: string } = Helper.validBody(user);
@@ -472,28 +481,38 @@ export class UserService {
     async replaceValuesPatch(user: any, id: string): Promise<CRUDReturn> {
         var validBody: { valid: boolean; data: string } = Helper.validBody(user);
         var count: number = this.countFunction(user, count);
-        var dbData = await this.DB.collection("users").doc(id).get();
+        var dbData = await this.DB.collection('users').doc(id).get();
 
         try {
             if (validBody.valid) {
                 if (this.idExists(id)) {
                     var exists = await this.emailExists(user?.email);
-                    if (!exists || user.email == dbData.data()["email"]) {
+                    if (!exists || user.email == dbData.data()['email']) {
                         switch (count) {
                             case 1:
                                 if (user.name != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ name: user.name });
                                 }
                                 if (user.age != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ age: user.age });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ age: user.age });
                                 }
                                 if (user.email != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ email: user.email });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ email: user.email });
                                 }
                                 if (user.password != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ password: user.password });
                                 }
-                                var anotherdata = (await this.DB.collection("users").doc(id).get()).data();
+                                var anotherdata = (
+                                    await this.DB.collection('users').doc(id).get()
+                                ).data();
                                 console.log(anotherdata);
                                 return {
                                     success: true,
@@ -503,24 +522,38 @@ export class UserService {
 
                             case 2:
                                 if (user.name != undefined && user.age != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ name: user.name, age: user.age });
                                 }
                                 if (user.name != undefined && user.email != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name, email: user.email });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ name: user.name, email: user.email });
                                 }
                                 if (user.name != undefined && user.password != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name, password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ name: user.name, password: user.password });
                                 }
                                 if (user.age != undefined && user.email != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ age: user.age, email: user.email });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ age: user.age, email: user.email });
                                 }
                                 if (user.age != undefined && user.password != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ age: user.age, password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ age: user.age, password: user.password });
                                 }
                                 if (user.email != undefined && user.password != undefined) {
-                                    await this.DB.collection("users").doc(id).update({ email: user.email, password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({ email: user.email, password: user.password });
                                 }
-                                var anotherdata = (await this.DB.collection('users').doc(id).get()).data();
+                                var anotherdata = (
+                                    await this.DB.collection('users').doc(id).get()
+                                ).data();
                                 console.log(anotherdata);
                                 return {
                                     success: true,
@@ -534,30 +567,56 @@ export class UserService {
                                     user.age != undefined &&
                                     user.email != undefined
                                 ) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, email: user.email });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({
+                                            name: user.name,
+                                            age: user.age,
+                                            email: user.email,
+                                        });
                                 }
                                 if (
                                     user.name != undefined &&
                                     user.age != undefined &&
                                     user.password != undefined
                                 ) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({
+                                            name: user.name,
+                                            age: user.age,
+                                            password: user.password,
+                                        });
                                 }
                                 if (
                                     user.name != undefined &&
                                     user.email != undefined &&
                                     user.password != undefined
                                 ) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name, email: user.email, password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({
+                                            name: user.name,
+                                            email: user.email,
+                                            password: user.password,
+                                        });
                                 }
                                 if (
                                     user.age != undefined &&
                                     user.email != undefined &&
                                     user.password != undefined
                                 ) {
-                                    await this.DB.collection("users").doc(id).update({ age: user.age, email: user.email, password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({
+                                            age: user.age,
+                                            email: user.email,
+                                            password: user.password,
+                                        });
                                 }
-                                var anotherdata = (await this.DB.collection("users").doc(id).get()).data();
+                                var anotherdata = (
+                                    await this.DB.collection('users').doc(id).get()
+                                ).data();
                                 console.log(anotherdata);
                                 return {
                                     success: true,
@@ -571,9 +630,18 @@ export class UserService {
                                     user.email != undefined &&
                                     user.password != undefined
                                 ) {
-                                    await this.DB.collection("users").doc(id).update({ name: user.name, age: user.age, email: user.email, password: user.password });
+                                    await this.DB.collection('users')
+                                        .doc(id)
+                                        .update({
+                                            name: user.name,
+                                            age: user.age,
+                                            email: user.email,
+                                            password: user.password,
+                                        });
                                 }
-                                var anotherdata = (await this.DB.collection("users").doc(id).get()).data();
+                                var anotherdata = (
+                                    await this.DB.collection('users').doc(id).get()
+                                ).data();
                                 console.log(anotherdata);
                                 return {
                                     success: true,
@@ -581,10 +649,7 @@ export class UserService {
                                 };
                                 break;
                         }
-                    } else
-                        throw new Error(
-                            `${user.email} does not exist in database.`,
-                        );
+                    } else throw new Error(`${user.email} does not exist in database.`);
                 }
                 throw new Error('User not found!');
             } else {
@@ -595,38 +660,69 @@ export class UserService {
         }
     }
 
-
     async deleteUser(id: string): Promise<CRUDReturn> {
         if (this.users.has(id)) {
-            var result = await this.DB.collection("users").doc(id).delete();
+            var result = await this.DB.collection('users').doc(id).delete();
             console.log(result);
             return {
                 success: true,
-                data: "data has been deleted",
+                data: 'data has been deleted',
             };
         } else
             return {
                 success: false,
-                data: "not deleted",
+                data: 'not deleted',
             };
     }
 
-    async loginUser(login: any): Promise<CRUDReturn> {
+    async loginUser(body: any): Promise<CRUDReturn> {
         try {
-            for (const user of this.users.values()) {
-                if (user.toJson().email == login.email)
-                    return user.login(login?.password);
+            var userResult = await this.DB.collection('users')
+                .where('email', '==', body.email)
+                .get();
+            var dbData = await this.DB.collection('users').get();
+            var returnUser: Array<any> = [];
+            if (!userResult.empty) {
+                dbData.forEach((doc) => {
+                    if (doc.data()['password'] == body.password) {
+                        console.log(doc.data()['email'], doc.data()['password']);
+                        returnUser.push(
+                            doc.data()['name'],
+                            doc.data()['email'],
+                            doc.data()['age'],
+                            doc.data()['password'],
+                        );
+                    }
+                });
+            } else {
+                return {
+                    success: false,
+                    data: 'Login Credentials does not match any users in the database.',
+                };
             }
-            throw new Error('Email does not match.');
+            console.log(returnUser.length);
+            if (returnUser.length > 0) {
+                return {
+                    success: true,
+                    data: returnUser,
+                };
+            } else {
+                return {
+                    success: false,
+                    data: 'Login Credentials does not match any users in the database.',
+                };
+            }
         } catch (error) {
-            console.log({ success: false, data: error.message });
-            return { success: false, data: error.message };
+            return {
+                success: false,
+                data: error.message,
+            };
         }
     }
 
     async emailExists(email: string): Promise<boolean> {
-        var userResults = await this.DB.collection("users")
-            .where("email", "==", email || "")
+        var userResults = await this.DB.collection('users')
+            .where('email', '==', email || '')
             .get();
         console.log(userResults.size);
         if (userResults.size > 0) {
@@ -683,7 +779,7 @@ export class UserService {
 
     async idExists(id: string): Promise<boolean> {
         var dbData: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
-            await this.DB.collection("users").get();
+            await this.DB.collection('users').get();
         var x = 0;
 
         dbData.forEach((doc) => {
@@ -693,8 +789,7 @@ export class UserService {
         });
         if (x == 1) {
             return true;
-        } else
-            return false;
+        } else return false;
     }
 
     countFunction(body: any, count: number) {

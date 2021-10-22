@@ -1,34 +1,38 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+  constructor(private router: Router, private api: HttpClient) {}
 
-  constructor(private router:Router) { }
+  ngOnInit(): void {}
 
-  ngOnInit(): void {
-  }
-  
   fCEmail = new FormControl();
   fCPassword = new FormControl();
-  
-  login(){
-    if(this.fCEmail.value == "padigos1000@gmail.com" && this.fCPassword.value == "secret"){
+
+  async login() {
+    var result: any = await this.api
+      .post(environment.API_URL + '/user/login', {
+        email: this.fCEmail.value,
+        password: this.fCPassword.value,
+      })
+      .toPromise();
+    if (result.success) {
       this.nav('home');
-    }
-    else{
-      alert ("Incorrect Details");
-      console.log("Sayop ka bai");
+    } else {
+      alert('Incorrect Details');
+      console.log('Sayop ka bai');
     }
   }
-
-  nav(destination:string){
+  nav(destination: string) {
     this.router.navigate([destination]);
   }
 }

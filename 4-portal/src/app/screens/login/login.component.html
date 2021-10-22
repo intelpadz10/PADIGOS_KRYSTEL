@@ -6,6 +6,11 @@
             <label for=" PASSWORD">Password</label>
             <input type="password" name="PASSWORD" [formControl]="fCPassword">
         </div>
-        <button (click)="login()">LOGIN</button>
+        <!-- <div>
+            {{fCEmail.value}} {{fCPassword.value}}
+        </div> -->
+        <div class="actions">
+            <button (click)="login()">LOGIN</button>
+            <button (click)="nav('register')">REGISTER</button>
+        </div>
     </div>
-</div>

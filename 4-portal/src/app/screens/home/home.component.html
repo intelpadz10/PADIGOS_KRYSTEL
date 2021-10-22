@@ -1,1 +1,19 @@
-<p>home works!</p>
+<div class="mainContent">
+    <div class="homePage">
+        <div class="actions">
+            <button class="getAllButton" (click)="getAll()"> GET ALL</button>
+            <button>GET INFO</button>
+            <button>DELETE</button>
+            <button>PATCH</button>
+            <button>PUT</button>
+        </div>
+    </div>
+    <div class="homePage2">
+        <p>LIST OF REGISTERED USERS</p>
+        <div class="data" *ngFor="let user of listOfUsers.data">
+            <ul>
+                <li>{{user | json}}</li>
+            </ul>
+        </div>
+    </div>
+</div>
