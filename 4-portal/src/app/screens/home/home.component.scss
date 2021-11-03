@@ -1,71 +1,60 @@
-p {
-    font-size: 30px;
-    padding: 24px;
-}
-
 .mainContent {
-    background-image: url("../../../assets/bg4.png");
-    background-repeat: no-repeat;
-    background-position: cover;
-    background-size: 100%;
-    justify-content: center;
-    align-content: center;
-    display: flex;
-    height: 100vh;
-    width: 100vw;
+    padding: 15px;
 }
 
-.homePage {
-    background-color: #8467d7;
-    justify-content: center;
-    flex-direction: column;
-    align-content: left;
-    text-align: left;
-    position: static;
-    display: flex;
-    border-radius: 20px;
-    padding: 24px;
-    height: auto;
-    width: 230px;
-}
-
-.homePage2 {
-    background-color: #d2b9d3;
-    flex-direction: column;
-    position: static;
-    border-radius: 20px;
-    margin-left: 200px;
-    padding: 24px;
-    height: auto;
-    width: 700px;
-}
-
-.homePage2 {
-    data {
-        height: auto;
-    }
-}
-
-.homePage2 {
-    p {
-        justify-content: center;
-        align-content: center;
-        text-align: center;
-    }
-}
-
-.homePage2 {
-    ul {
-        text-align: left;
-        padding: 10px;
-    }
-}
-
-button {
-    background-color: #c8a2c8;
-    border-radius: 20px;
-    font-size: 20px;
-    margin: 10px;
-    width: 150px;
-    height: 35px;
-}
+// p {
+//     font-size: 30px;
+//     padding: 24px;
+// }
+// .mainContent {
+//     background-color: rgba(0, 0, 0, 0.953);
+//     align-content: center;
+//     display: flex;
+//     height: 100vh;
+//     width: 100vw;
+// }
+// .homePage {
+//     box-shadow: 5px 5px 20px 1px rgb(174, 164, 164);
+//     background-color: #d1bae9f3;
+//     justify-content: center;
+//     align-content: center;
+//     display: fixed;
+//     margin: 25px;
+//     width: min-content;
+//     padding: 50px;
+// }
+// .homePage2 {
+//     box-shadow: 5px 5px 20px 1px rgb(174, 164, 164);
+//     background-color: #d1bae9f3;
+//     justify-content: center;
+//     align-content: center;
+//     display: fixed;
+//     margin: 25px;
+//     width: min-content;
+//     padding: 50px;
+//     p {
+//         justify-content: center;
+//         align-content: center;
+//         text-align: center;
+//     }
+//     ul {
+//         text-align: left;
+//         padding: 10px;
+//     }
+//     th {
+//         text-align: left;
+//         padding: 40px;
+//     }
+//     td {
+//         text-align: left;
+//         padding: 40px;
+//     }
+// }
+// button {
+//     background-color: #c8a2c8;
+//     border-radius: 20px;
+//     font-size: 20px;
+//     margin: 10px;
+//     width: 150px;
+//     height: 35px;
+// }

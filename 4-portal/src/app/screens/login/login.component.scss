@@ -1,35 +1,37 @@
 .mainContent {
-    background-image: url("../../../assets/bg1.jpg");
+    background-image: url("../../../assets/bg4.jpg");
     background-repeat: no-repeat;
-    background-position: cover;
-    background-size: 100%;
+    background-position: static;
+    background-size: cover;
     justify-content: center;
     align-content: center;
-    text-align: center;
     display: grid;
     height: 100vh;
     width: 100vw;
+    position: static;
 }
 
 .loginPage {
-    background-color: slategray;
+    box-shadow: 5px 5px 50px 1px rgb(174, 164, 164);
+    background-color: transparent;
     justify-content: center;
     flex-direction: column;
-    align-content: center;
     text-align: center;
     display: flex;
-    border-radius: 24px;
+    border-radius: 20px;
     padding: 24px;
-    height: 600px;
+    height: 400px;
     width: 800px;
 }
 
 label {
     margin-top: 20px;
     font-size: 20px;
+    color: white;
 }
 
 input {
+    background-color: rgb(226, 217, 217);
     padding-bottom: 8px;
     margin-left: 110px;
     margin-top: 10px;
@@ -44,13 +46,30 @@ input {
     display: flex;
 }
 
+input[type="text"] {
+    font-size: 15px;
+}
+
+input[type="email"] {
+    font-size: 15px;
+}
+
+input[type="password"] {
+    font-size: 15px;
+}
+
 button {
-    background-color: #566D7E;
+    box-shadow: 1px 1px 10px 1px rgb(94, 91, 91);
+    background-color: #ad86c9;
     border-radius: 20px;
     margin-top: 50px;
     font-size: 20px;
     height: 35px;
-    width: 50%;
+    width: 40%;
+}
+
+button:hover {
+    color: rgb(173, 6, 206);
 }
 
 p {

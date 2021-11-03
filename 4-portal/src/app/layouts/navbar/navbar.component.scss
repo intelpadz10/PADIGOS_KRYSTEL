@@ -1,0 +1,25 @@
+.nav-body {
+    height: 64px;
+    display: grid;
+    color: white;
+    align-items: center;
+    justify-items: center;
+    padding: 0 16px 0 16px;
+    grid-template-columns: 50px auto 50px;
+    background-image: linear-gradient(to bottom right, rgb(130, 33, 150), rgb(45, 10, 102), rgb(17, 17, 17));
+    .site-title {
+        h2 {
+            cursor: pointer;
+        }
+    }
+    .site-links {
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        grid-auto-flow: column;
+    }
+    h4 {
+        cursor: pointer;
+        margin: 0 8px 0 8px;
+    }
+}

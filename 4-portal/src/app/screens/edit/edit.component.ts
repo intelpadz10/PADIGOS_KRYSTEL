@@ -1,44 +1,44 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { AuthService } from 'src/app/shared/auth.service';
 import { Router } from '@angular/router';
+import { User } from 'src/app/model/user.model';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
+  selector: 'edit-user',
+  templateUrl: './edit.component.html',
+  styleUrls: ['./edit.component.scss']
 })
-export class RegisterComponent implements OnInit {
-  
+export class EditComponent implements OnInit {
   constructor(private router: Router, private auth: AuthService) {}
+
+  @Input() user:User|undefined;
+  @Output() backEvent = new EventEmitter<boolean>();
 
   registerForm: FormGroup = new FormGroup({
     fcName: new FormControl('', Validators.required),
     fcAge: new FormControl(0, Validators.min(1)),
     fcEmail: new FormControl('', Validators.required),
-    fcPassword: new FormControl('', Validators.required),
-    fcPassword2: new FormControl('', Validators.required),
   });
 
   error: string = '';
 
-  ngOnInit(): void {}
+  goBack(){
+    this.backEvent.emit(true);
+  }
 
-  // fCEmail = new FormControl();
-  // fCPassword = new FormControl();
-  // fCAge = new FormControl();
-  // fCName = new FormControl();
+  ngOnInit(): void {
+    if(this.user!=undefined){
+      this.registerForm.setValue({
+        fcName:this.user.name,
+        fcAge: this.user.age,
+        fcEmail:this.user.email
+      });
+    }
+  }
 
-  async onSubmit() {
-    // var result: any = await this.api
-    //   .post(environment.API_URL + '/user/register', {
-    //     name: this.registerForm.value.fcName,
-    //     age: this.registerForm.value.fcAge,
-    //     email: this.registerForm.value.fcEmail,
-    //     password: this.registerForm.value.fcPassword,
-    //   })
-    //   .toPromise();
+  onSubmit() {
     if (
       this.registerForm.value['fcPassword'] !==
       this.registerForm.value['fcPassword2']

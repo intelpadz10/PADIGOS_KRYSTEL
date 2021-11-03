@@ -2,15 +2,13 @@
     <div class="loginPage">
         <div class="inputs">
             <label for="EMAIL">Email</label>
-            <input type="email" name="EMAIL" [formControl]="fCEmail">
+            <input type="email" name="EMAIL" placeholder="monicabing@gmail.com" [formControl]="fCEmail">
             <label for=" PASSWORD">Password</label>
-            <input type="password" name="PASSWORD" [formControl]="fCPassword">
+            <input type="password" name="PASSWORD" placeholder="password" [formControl]="fCPassword ">
         </div>
-        <!-- <div>
-            {{fCEmail.value}} {{fCPassword.value}}
-        </div> -->
-        <div class="actions">
-            <button (click)="login()">LOGIN</button>
-            <button (click)="nav('register')">REGISTER</button>
+        <h5 *ngIf="error!=''">{{error}}</h5>
+        <div class="actions ">
+            <button (click)="login() ">Login</button>
+            <button (click)="nav( 'register') ">Register</button>
         </div>
     </div>

@@ -1,31 +1,38 @@
 import { RouterModule, Routes } from '@angular/router';
 
-import { HomeComponent } from 'src/app/screens/home/home.component';
-import { LoginComponent } from 'src/app/screens/login/login.component';
+import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
+import { HomeComponent } from './screens/home/home.component';
+import { LoginComponent } from './screens/login/login.component';
 import { NgModule } from '@angular/core';
 import { RegisterComponent } from './screens/register/register.component';
 
 const routes: Routes = [
   {
-    path: 'home',
-    component: HomeComponent
-  },
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
     path: '',
-    component: LoginComponent
+    component: DefaultLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: LoginComponent,
+      },
+      {
+        path: 'login',
+        component: LoginComponent,
+      },
+      {
+        path: 'register',
+        component: RegisterComponent,
+      },
+      {
+        path: 'home',
+        component: HomeComponent,
+      },
+    ],
   },
-  {
-    path: 'register',
-    component: RegisterComponent
-  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

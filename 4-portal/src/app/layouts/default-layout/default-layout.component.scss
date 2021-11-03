@@ -1,0 +1,18 @@
+.default-layout-body {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    overflow: hidden;
+    grid-template-rows: auto, auto;
+    .nav {
+        position: sticky;
+    }
+    .content {
+        height: 100%;
+        display: grid;
+        overflow-y: auto;
+        grid-auto-flow: row;
+        align-items: space-between;
+        grid-template-rows: 0 auto 51px;
+    }
+}

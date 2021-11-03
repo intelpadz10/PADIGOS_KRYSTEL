@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
+import { ApiService } from 'src/app/shared/api.service';
+import { AuthService } from 'src/app/shared/auth.service';
 import { FormControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
@@ -11,26 +12,26 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  constructor(private router: Router, private api: HttpClient) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
   ngOnInit(): void {}
 
   fCEmail = new FormControl();
   fCPassword = new FormControl();
   requestResult = '';
+  error = '';
   
   async login() {
-    var result: any = await this.api
-      .post(environment.API_URL + '/user/login', {
-        email: this.fCEmail.value,
-        password: this.fCPassword.value,
-      })
-      .toPromise();
-    if (result.success) {
+    this.error = '';
+    var result: any = await this.auth.login(
+        this.fCEmail.value,
+        this.fCPassword.value,
+    );
+    console.log(result);
+    if (this.auth.authenticated) {
       this.nav('home');
     } else {
-      alert('Incorrect Details');
-      console.log('Sayop ka bai');
+      this.error = result.data;
     }
   }
   nav(destination: string) {

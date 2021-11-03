@@ -1,0 +1,39 @@
+<div class="userMain">
+    <table *ngIf="viewedUserIndex == undefined">
+        <thead>
+            <tr>
+                <th>
+                    <h2>List of Registered Users</h2>
+                    <br /><br />
+                </th>
+                <th>
+                    <h3 (click)="resetDB()">Reset Data</h3>
+                </th>
+                <th colspan="3">
+                    <input type="search" (change)="getData(searchVal.value)" #searchVal />
+                </th>
+            </tr>
+
+            <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of users; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.age }}</td>
+                <td>
+                    <fa-icon (click)="deleteUser(i)" [icon]="faTrash"></fa-icon>
+                    <fa-icon (click)="viewUserData(i)" [icon]="faEdit"></fa-icon>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <edit-user *ngIf="viewedUserIndex != undefined" [user]="users[viewedUserIndex]" (backEvent)="handleBackEvent($event)"></edit-user>
+</div>
