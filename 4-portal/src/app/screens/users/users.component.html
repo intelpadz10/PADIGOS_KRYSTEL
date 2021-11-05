@@ -5,14 +5,13 @@
     <table *ngIf="viewedUserIndex == undefined">
         <thead>
             <tr>
-                <th>
-                    <h3 (click)="resetDB()">Reset Data</h3>
-                    <br />
-                </th>
-                <th colspan="3">
+                <th colspan="2">
                     <label for="Search">Search</label>
                     <input type="text" [(ngModel)]="searchVal" class="form-control" id="search" />
+                </th>
+                <th colspan="4">
                     <button class="addUserBtn" (click)="nav('addUser') ">Add User</button>
+                    <button class="resetBtn" (click)="resetDB()">Reset Data</button>
                 </th>
             </tr>
 

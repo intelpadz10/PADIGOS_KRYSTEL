@@ -11,11 +11,6 @@
         padding: 20px;
         font-size: 15px;
         min-width: 80vw;
-        tr {
-            padding: 0px;
-            font-size: 15px;
-            margin: 0px;
-        }
         .columns {
             background-color: rgb(142, 54, 243);
             color: white;
@@ -56,26 +51,30 @@
     }
     .deleteBtn {
         background-color: rgb(125, 203, 255);
-        padding: 6px;
-        cursor: pointer;
         font-size: 12px;
         margin-right: 10px;
     }
     .editBtn {
         background-color: rgb(234, 255, 40);
-        padding: 6px;
-        cursor: pointer;
         font-size: 12px;
         margin-right: 1px;
     }
     .addUserBtn {
         background-color: rgb(0, 0, 0);
         color: blanchedalmond;
+        font-size: 12px;
+        margin-left: 0px;
+    }
+    .resetBtn {
+        background-color: rgb(0, 0, 0);
+        color: blanchedalmond;
+        font-size: 12px;
+        margin-left: 0px;
+    }
+    button {
         border-radius: 10px;
         padding: 6px;
         cursor: pointer;
-        font-size: 12px;
-        margin-left: 0px;
     }
     button:hover {
         background-color: rgb(225, 64, 247);

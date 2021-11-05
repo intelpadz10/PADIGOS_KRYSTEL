@@ -19,15 +19,16 @@ export class UsersComponent implements OnInit {
   faTrash = faTrash;
   faEdit = faEdit;
   viewedUserIndex:number | undefined;
+  Helper: any;
   
   constructor(private router: Router, private api: ApiService, private auth: AuthService) {}
-
+  
   ngOnInit(): void {
-   
     this.getAll();
     this.getData();
     this.resetDB();
   }
+  
   
   async deleteUser(i: number) {
     var decision = confirm('Delete user ' + this.users[i].name);
@@ -59,6 +60,8 @@ export class UsersComponent implements OnInit {
   async getData(term?: string) {
     if (term == undefined || term == null || term=='') {
       this.users = await this.getAll();
+    }else{
+      this.users = await this.searchVal(term);
     }
     console.log(this.users);
   }
