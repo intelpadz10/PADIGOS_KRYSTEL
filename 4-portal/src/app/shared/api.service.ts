@@ -31,6 +31,7 @@ export class ApiService {
       return null;
     }
   }
+  
   async delete(url: string): Promise<any> {
     try {
       return await this.api.delete(environment.API_URL+url).toPromise();

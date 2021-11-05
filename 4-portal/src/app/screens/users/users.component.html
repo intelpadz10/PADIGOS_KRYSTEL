@@ -1,36 +1,42 @@
 <div class="userMain">
+    <th>
+        <h1>List of Registered Users</h1>
+    </th>
     <table *ngIf="viewedUserIndex == undefined">
         <thead>
             <tr>
                 <th>
-                    <h2>List of Registered Users</h2>
-                    <br /><br />
-                </th>
-                <th>
                     <h3 (click)="resetDB()">Reset Data</h3>
+                    <br />
                 </th>
                 <th colspan="3">
-                    <input type="search" (change)="getData(searchVal.value)" #searchVal />
+                    <label for="Search">Search</label>
+                    <input type="text" [(ngModel)]="searchVal" class="form-control" id="search" />
+                    <button class="addUserBtn" (click)="nav('addUser') ">Add User</button>
                 </th>
             </tr>
 
-            <tr>
-                <th>No.</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Age</th>
+            <tr class="columns">
+                <th scope="col ">User ID</th>
+                <th scope="col ">Name</th>
+                <th scope="col ">Email</th>
+                <th scope="col ">Age</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let user of users; index as i">
-                <td>{{ i + 1 }}</td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.age }}</td>
+            <tr *ngFor="let user of users | search: searchVal; index as i">
+                <td scope="col ">{{ user.id }}</td>
+                <td scope="col ">{{ user.name }}</td>
+                <td scope="col ">{{ user.email }}</td>
+                <td scope="col ">{{ user.age }}</td>
                 <td>
-                    <fa-icon (click)="deleteUser(i)" [icon]="faTrash"></fa-icon>
-                    <fa-icon (click)="viewUserData(i)" [icon]="faEdit"></fa-icon>
+                    <button class="deleteBtn" (click)="deleteUser(i)">
+            <fa-icon [icon]="faTrash"></fa-icon>Delete
+          </button>
+                    <button class="editBtn" (click)="viewUserData(i)">
+            <fa-icon [icon]="faEdit"></fa-icon>Edit
+          </button>
                 </td>
             </tr>
         </tbody>

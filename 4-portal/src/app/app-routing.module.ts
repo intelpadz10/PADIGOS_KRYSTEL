@@ -1,5 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 
+import { AdduserComponent } from './screens/adduser/adduser.component';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
 import { HomeComponent } from './screens/home/home.component';
 import { LoginComponent } from './screens/login/login.component';
@@ -26,6 +27,10 @@ const routes: Routes = [
       {
         path: 'home',
         component: HomeComponent,
+      },
+      {
+        path: 'addUser',
+        component: AdduserComponent,
       },
     ],
   },

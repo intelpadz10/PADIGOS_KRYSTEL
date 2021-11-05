@@ -6,13 +6,13 @@ import { AuthService } from 'src/app/shared/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
+  selector: 'app-adduser',
+  templateUrl: './adduser.component.html',
+  styleUrls: ['./adduser.component.scss']
 })
-export class RegisterComponent implements OnInit {
-  
-  constructor(private router: Router, private auth: AuthService, private api: ApiService) {}
+export class AdduserComponent implements OnInit {
+
+  constructor(private router: Router, private auth: AuthService, private api: ApiService) { }
 
   registerForm: FormGroup = new FormGroup({
     fcName: new FormControl('', Validators.required),
@@ -24,7 +24,7 @@ export class RegisterComponent implements OnInit {
 
   error: string = '';
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   async onSubmit() {
     if (
@@ -57,7 +57,8 @@ export class RegisterComponent implements OnInit {
       };
       this.auth.register(payload).then((data) => {
         console.log(data);
-        if (this.auth.authenticated) {
+        if (this.auth.authenticated && data.success == true) {
+          alert('Add user success!');
           this.nav('home');
         } else {
           this.error = data.data;

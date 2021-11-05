@@ -1,3 +1,6 @@
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { AdduserComponent } from './screens/adduser/adduser.component';
 import { ApiService } from './shared/api.service';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -12,8 +15,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './screens/login/login.component';
 import { NavbarComponent } from './layouts/navbar/navbar.component';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './screens/register/register.component';
+import { SearchPipe } from './search.pipe';
 import { SharedModule } from './shared/shared.module';
 import { UsersComponent } from './screens/users/users.component';
 
@@ -27,7 +30,9 @@ import { UsersComponent } from './screens/users/users.component';
     NavbarComponent,
     FooterComponent,
     UsersComponent,
-    EditComponent
+    EditComponent,
+    SearchPipe,
+    AdduserComponent
   ],
   imports: [
     HttpClientModule,
@@ -35,7 +40,8 @@ import { UsersComponent } from './screens/users/users.component';
     AppRoutingModule,
     ReactiveFormsModule,
     SharedModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    FormsModule
   ],
   providers: [ApiService, AuthService],
   bootstrap: [AppComponent]

@@ -2,11 +2,11 @@
     <div class="loginPage">
         <div class="inputs">
             <label for="EMAIL">Email</label>
-            <input type="email" name="EMAIL" placeholder="monicabing@gmail.com" [formControl]="fCEmail">
+            <input type="email" name="EMAIL" placeholder="ex. monicabing@gmail.com" [formControl]="fCEmail">
             <label for=" PASSWORD">Password</label>
             <input type="password" name="PASSWORD" placeholder="password" [formControl]="fCPassword ">
         </div>
-        <h5 *ngIf="error!=''">{{error}}</h5>
+        <h2 *ngIf="error!=''">{{error}}</h2>
         <div class="actions ">
             <button (click)="login() ">Login</button>
             <button (click)="nav( 'register') ">Register</button>
