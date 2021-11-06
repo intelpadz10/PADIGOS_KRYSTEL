@@ -8,10 +8,10 @@
                 <th colspan="2">
                     <label for="Search">Search</label>
                     <input type="text" [(ngModel)]="searchVal" class="form-control" id="search" />
+                    <button class="addUserBtn" (click)="nav('addUser')">Add User</button>
                 </th>
                 <th colspan="4">
-                    <button class="addUserBtn" (click)="nav('addUser') ">Add User</button>
-                    <button class="resetBtn" (click)="resetDB()">Reset Data</button>
+                    <!-- <button class="resetBtn" (click)="resetDB()">Reset Data</button> -->
                 </th>
             </tr>
 
