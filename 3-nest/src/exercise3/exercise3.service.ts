@@ -1,6 +1,8 @@
 import { Car } from './car.model';
-//import { HTML } from './html.helper';
 import { Injectable } from '@nestjs/common';
+
+//import { HTML } from './html.helper';
+
 
 @Injectable()
 export class Exercise3Service {
@@ -52,5 +54,4 @@ logAllcars(){
         car.log();
     }
 }
-
 }
